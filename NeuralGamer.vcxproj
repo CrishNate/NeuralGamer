@@ -149,7 +149,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="MainForm.cpp" />
+    <ClCompile Include="Neural Network\Dendrite.cpp" />
+    <ClCompile Include="Neural Network\Layer.cpp" />
     <ClCompile Include="Neural Network\NeuralNetwork.cpp" />
+    <ClCompile Include="Neural Network\Neuron.cpp" />
     <ClCompile Include="noise.cpp" />
     <ClCompile Include="Patterns.cpp" />
   </ItemGroup>

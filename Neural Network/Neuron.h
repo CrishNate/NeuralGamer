@@ -5,15 +5,8 @@
 class Neuron
 {
 public:
-	Neuron(bool onlyPositive = false)
-		: m_Value(NULL)
-	{
-		// generating random value for bias
-		if (onlyPositive)
-			m_Bias = frand(0, 1);
-		else
-			m_Bias = frand(-1, 1);
-	}
+	Neuron(bool onlyPositive = false);
+	~Neuron();
 
 	void SetBias(float bias) { m_Bias = bias; }
 	float GetBias() { return m_Bias; }
@@ -26,11 +19,7 @@ public:
 
 	int DendriteCount() { return m_Dendrites.size(); }
 
-	bool AddDendrite(Dendrite* neuron)
-	{
-		m_Dendrites.push_back(neuron);
-		return true;
-	}
+	bool AddDendrite(Dendrite* neuron);
 
 	Dendrite* GetDendrite(int dendriteInx) { return m_Dendrites[dendriteInx]; }
 

@@ -9,7 +9,7 @@ CPatterns::CPatterns(const std::vector<int>& layers)
 
 CPatterns::~CPatterns() 
 {
-
+	delete m_pBrain;
 }
 
 

@@ -4,19 +4,13 @@
 class Layer
 {
 public:
-	Layer() { }
+	Layer();
+	~Layer();
 
-	int NeuronCount() { return m_Neurons.size(); }
-
-	bool AddNeuron(Neuron* neuron)
-	{
-		m_Neurons.push_back(neuron);
-		return true;
-	}
-
-	Neuron* GetNeuron(int neuronInx) { return m_Neurons[neuronInx]; }
-
-	std::vector<Neuron*> GetNeurons() { return m_Neurons; }
+	int NeuronCount();
+	bool AddNeuron(Neuron* neuron);
+	Neuron* GetNeuron(int neuronInx);
+	std::vector<Neuron*> GetNeurons();
 
 private:
 	// fields

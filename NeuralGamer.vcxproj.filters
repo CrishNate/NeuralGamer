@@ -65,6 +65,15 @@
     <ClCompile Include="noise.cpp">
       <Filter>Файлы исходного кода</Filter>
     </ClCompile>
+    <ClCompile Include="Neural Network\Layer.cpp">
+      <Filter>Neural Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Neural Network\Dendrite.cpp">
+      <Filter>Neural Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Neural Network\Neuron.cpp">
+      <Filter>Neural Network</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="MainForm.resx">

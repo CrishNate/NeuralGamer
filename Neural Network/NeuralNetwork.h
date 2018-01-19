@@ -20,6 +20,8 @@ public:
 	// Clone Neural Network
 	NeuralNetwork(NeuralNetwork* nn);
 
+	~NeuralNetwork();
+
 	bool Reproduce(NeuralNetwork* pParent1, NeuralNetwork* pParent2);
 
 	void CreateNNTree(const std::vector<int>& layers, bool onlyPositive = false);
@@ -51,10 +53,7 @@ public:
 	void SetFitness(float fitness) { m_Fitness = fitness; }
 	float GetFitness() { return m_Fitness; }
 
-	int LayerCount()
-	{
-		return m_Layers.size();
-	}
+	int LayerCount();
 
 private:
 	// fields

@@ -5,40 +5,19 @@
 #include <iostream>
 #include "Patterns.h"
 
-#define PLAY_KEY 0x51
-#define RECORD_KEY 0xC0
-#define DIVISIONS 20
+#define PLAY_KEY	0x51
+#define RECORD_KEY	0xC0
+#define DIVISIONS	25
 
-//
-//std::vector<std::string> SplitString(const std::string& str, char symbol)
-//{
-//	std::vector<std::string> splitStr;
-//	std::stringstream ss(str);
-//	std::string to;
-//
-//	while (std::getline(ss, to, symbol))
-//	{
-//		splitStr.push_back(to);
-//	}
-//
-//	return splitStr;
-//}
+#define SCREEN_REAL_WIDTH	1920
+#define SCREEN_REAL_HEIGHT	1080
 
 namespace NeuralGamer {
-
-	bool m_Record;
-	bool m_RecordPressed;
-
-	bool m_Play;
-	bool m_PlayPressed;
 
 	bool m_KeyStates[256] = { false };
 
 	POINT m_MousePosition;
 	unsigned int m_Itterator = 0;
-	time_t m_Time = 0;
-	time_t m_DelayTime = 0;
-	time_t m_HoldTime[256] = { 0 };
 	POINT m_SelectedAreaStart;
 
 	using namespace System;
@@ -83,6 +62,9 @@ namespace NeuralGamer {
 	private: RectangleF m_SelectionRect;
 	private: int m_SelectingArea = 0;
 
+	private: BOOL m_Record;
+	private: BOOL m_Play;
+
 	private: System::Windows::Forms::Button^  selectArea;
 	protected:
 
@@ -90,8 +72,10 @@ namespace NeuralGamer {
 	{
 		m_SelectionRect.X = a.x > b.x ? b.x : a.x;
 		m_SelectionRect.Y = a.y > b.y ? b.y : a.y;
-		m_SelectionRect.Width = abs(b.x - a.x);
-		m_SelectionRect.Height = abs(b.y - a.y);
+		m_SelectionRect.X *= round(1920.0f / GetSystemMetrics(SM_CXSCREEN));
+		m_SelectionRect.Y *= round(1080.0f / GetSystemMetrics(SM_CYSCREEN));
+		m_SelectionRect.Width = round(abs(b.x - a.x) * (1920.0f / GetSystemMetrics(SM_CXSCREEN)));
+		m_SelectionRect.Height = round(abs(b.y - a.y) * (1080.0f / GetSystemMetrics(SM_CYSCREEN)));
 
 		if (m_pPattern != NULL)
 			delete m_pPattern;
@@ -115,28 +99,35 @@ namespace NeuralGamer {
 		// Making screenshot of workspace
 		BYTE* pImg = AutoCO::Screenshot(
 			POINT{ m_SelectionRect.X, m_SelectionRect.Y },
-			POINT{ m_SelectionRect.X + m_SelectionRect.Width, m_SelectionRect.Y + m_SelectionRect.Height });
+			POINT{ m_SelectionRect.Width, m_SelectionRect.Height });
 
-		float scaleOfLayer = (m_SelectionRect.Width * m_SelectionRect.Height) / (DIVISIONS * DIVISIONS);
-		std::vector<float> input;
+		int scaleOfLayer = (m_SelectionRect.Width * m_SelectionRect.Height) / (DIVISIONS * DIVISIONS);
+		std::vector<float> input(scaleOfLayer);
 
 		// drawing image
-		float coef = m_SelectionRect.Width > m_SelectionRect.Height ? (480 / m_SelectionRect.Width) : (270 / m_SelectionRect.Height);
+		float coef = (480 / m_SelectionRect.Width) > (270 / m_SelectionRect.Height) ? (270 / m_SelectionRect.Height) : (480 / m_SelectionRect.Width);
 
 		for (int i = 0; i < m_SelectionRect.Width; i += DIVISIONS)
 			for (int j = 0; j < m_SelectionRect.Height; j += DIVISIONS)
 			{
+				size_t inx = (i / DIVISIONS) * floor(m_SelectionRect.Height / DIVISIONS) + j / DIVISIONS;
+				if (inx >= scaleOfLayer)
+				{
+					continue;
+				}
+
 				RGBColor clr = AutoCO::GetPixelI(pImg, POINT{ i, j }, m_SelectionRect.Width);
-				clr.ToBWC(1, 0, 0);
+				clr.ToBWC(1, 1, 1);
 				System::Drawing::Brush^ brush = gcnew System::Drawing::SolidBrush(System::Drawing::Color::FromArgb(clr.r, clr.g, clr.b));
 				buffGraphics->FillRectangle(brush, Drawing::Rectangle(i * coef, j * coef, coef * DIVISIONS + 1, coef * DIVISIONS + 1));
 				
-				input.push_back(clr.r / 255);
+				input[inx] = clr.r / 255;
 
 				delete brush;
 			}
 
 		m_pPattern->GetBrain()->Run(input);
+
 		delete[] pImg;
 		screenCapture->Refresh();
 	}
@@ -200,8 +191,7 @@ namespace NeuralGamer {
 			// 
 			this->screenCapture->Location = System::Drawing::Point(12, 12);
 			this->screenCapture->Name = L"screenCapture";
-			this->screenCapture->Size = System::Drawing::Size(100, 100);
-			this->screenCapture->SizeMode = System::Windows::Forms::PictureBoxSizeMode::AutoSize;
+			this->screenCapture->Size = System::Drawing::Size(480, 270);
 			this->screenCapture->TabIndex = 0;
 			this->screenCapture->TabStop = false;
 			// 
@@ -246,7 +236,7 @@ namespace NeuralGamer {
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->screenCapture))->EndInit();
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^>(this->neuraltracking))->EndInit();
 			this->ResumeLayout(false);
-			this->PerformLayout();
+
 		}
 
 	#pragma endregion
@@ -264,6 +254,8 @@ namespace NeuralGamer {
 				{
 					// pressing key
 					m_KeyStates[i] = true;
+
+					std::cout << i << "\n";
 
 					if (i == 1 &&m_SelectingArea == 1)
 					{

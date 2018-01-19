@@ -11,6 +11,7 @@ NeuralNetwork::NeuralNetwork(float learningRate, const std::vector<int>& layers,
 	CreateNNTree(layers, onlyPositive);
 }
 
+
 NeuralNetwork::NeuralNetwork(NeuralNetwork* nn)
 	: m_Generation(nn->GetGeneration())
 {
@@ -38,6 +39,16 @@ NeuralNetwork::NeuralNetwork(NeuralNetwork* nn)
 		}
 	}
 }
+
+
+NeuralNetwork::~NeuralNetwork()
+{
+	for (Layer* pLayrs : m_Layers)
+		delete pLayrs;
+
+	m_Layers.clear();
+}
+
 
 bool NeuralNetwork::Reproduce(NeuralNetwork* pParent1, NeuralNetwork* pParent2)
 {
@@ -76,6 +87,7 @@ bool NeuralNetwork::Reproduce(NeuralNetwork* pParent1, NeuralNetwork* pParent2)
 	return true;
 }
 
+
 void NeuralNetwork::CreateNNTree(const std::vector<int>& layers, bool onlyPositive)
 {
 	// creating layers
@@ -99,6 +111,7 @@ void NeuralNetwork::CreateNNTree(const std::vector<int>& layers, bool onlyPositi
 		}
 	}
 }
+
 
 void NeuralNetwork::Mutate()
 {
@@ -242,4 +255,10 @@ int NeuralNetwork::Compare(NeuralNetwork* nn)
 	{
 		return 0;
 	}
+}
+
+
+int NeuralNetwork::LayerCount()
+{
+	return m_Layers.size();
 }

@@ -38,13 +38,14 @@ namespace AutoCO
 	}
 
 
-	static BYTE* Screenshot(POINT a, POINT b)
+	static BYTE* Screenshot(POINT a, POINT scale)
 	{
 		// copy screen to bitmap
 		HDC     hScreen = GetDC(NULL);
 		HDC     hDC = CreateCompatibleDC(hScreen);
-		uint16_t scrW = abs(b.x - a.x);
-		uint16_t scrH = abs(b.y - a.y);
+		uint16_t scrW = scale.x;
+		uint16_t scrH = scale.y;
+
 		HBITMAP hBitmap = CreateCompatibleBitmap(hScreen, scrW, scrH);
 		HGDIOBJ old_obj = SelectObject(hDC, hBitmap);
 		BOOL    bRet = BitBlt(hDC, 0, 0, scrW, scrH, hScreen, a.x, a.y, SRCCOPY);
